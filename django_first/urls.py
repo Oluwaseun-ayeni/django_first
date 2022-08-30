@@ -27,13 +27,15 @@ Including another URLconf
 # ]
 
 from django.urls import *
-from bookmarks.views import *
 from django.contrib import admin
 
 
+
 urlpatterns = [
-    re_path(r'^$', main_page,name='main_page'),
+    
+    path('bookmarks/', include('bookmarks.urls')),
     path('admin/', admin.site.urls),
+   
 
 
 ]
