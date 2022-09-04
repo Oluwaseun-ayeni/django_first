@@ -13,18 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-# from ast import pattern
-# from django.contrib import admin
-# from django.urls import *
-# from bookmarks.views import *
 
-
-# urlpatterns = [
-#     # path('bookmarks/', include('bookmarks.urls')),
-#     path('admin/', admin.site.urls),
-    
-    
-# ]
 
 from django.urls import *
 from django.contrib import admin
@@ -32,9 +21,10 @@ from django.contrib import admin
 
 
 urlpatterns = [
-    
+    path('__debug__/', include('debug_toolbar.urls')),
     path('bookmarks/', include('bookmarks.urls')),
     path('admin/', admin.site.urls),
+    path('bookmarks/',include('django.contrib.auth.urls'))
    
 
 
