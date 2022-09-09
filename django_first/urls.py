@@ -14,9 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-
+import os
 from django.urls import *
 from django.contrib import admin
+from django.conf import settings
+from django.contrib.staticfiles import views
+
+site_media = os.path.join(
+    os.path.dirname(__file__), 'site_media'
+)
 
 
 
@@ -24,8 +30,13 @@ urlpatterns = [
     path('__debug__/', include('debug_toolbar.urls')),
     path('bookmarks/', include('bookmarks.urls')),
     path('admin/', admin.site.urls),
-    path('bookmarks/',include('django.contrib.auth.urls'))
-   
-
-
+    path('bookmarks/',include('django.contrib.auth.urls')),
+    
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += [
+        re_path(r'^site_media/(?P<path>.*)$', views.serve,
+        { 'document_root': site_media})
+    ]
