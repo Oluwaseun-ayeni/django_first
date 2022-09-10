@@ -13,5 +13,3 @@ class Bookmark(models.Model):
     user = models.ForeignKey(Users, on_delete=models.CASCADE)
     link = models.ForeignKey(Link, on_delete=models.CASCADE)   
 
-
-# Create your models here.

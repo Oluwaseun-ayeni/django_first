@@ -1,9 +1,11 @@
+from multiprocessing import context
 from django.contrib.auth import logout
 from django.http import *
 from .models import *
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.template import RequestContext
+from bookmarks.forms import *
 
 def main_page(request):
     return render( request, "main_page.html")
@@ -16,13 +18,28 @@ def user_page(request, username):
     except:
         raise Http404('Requested user not found.')
     bookmarks = user.bookmark_set.all()
-    variables = RequestContext(request,{
+    context = ({
         'username': username,
         'bookmarks': bookmarks,
     })    
-    return render(request, "user_page.html",variables)
+    return render(request, "user_page.html",context)
 
-    
+def register_page(request):
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)  
+        if form.is_valid():
+            user = User.objects.create_user(
+                username=form.cleaned_data['username'],
+                password=form.cleaned_data['password1'],
+                email=form.cleaned_data['email']
+            )
+            return redirect("bookmark:homepage")
+    else:
+        form = RegistrationForm()   
+    context = ( {
+            'form': form
+        })
+    return render(request, 'registration/register.html',context)         
 
 def logout_page(request):
     logout(request)
