@@ -1,5 +1,7 @@
 from django.db import models
 
+import bookmarks
+
 class Link(models.Model):
     url = models.URLField(unique=True)
 
@@ -12,4 +14,8 @@ class Bookmark(models.Model):
     title = models.CharField(max_length=200)
     user = models.ForeignKey(Users, on_delete=models.CASCADE)
     link = models.ForeignKey(Link, on_delete=models.CASCADE)   
+
+class Tag(models.Model):
+    name = models.CharField(max_length=64, unique=True)
+    bookmarks = models.ManyToManyField(Bookmark)
 
