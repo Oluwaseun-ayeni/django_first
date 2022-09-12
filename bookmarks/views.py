@@ -1,10 +1,8 @@
-from multiprocessing import context
 from django.contrib.auth import logout
 from django.http import *
 from .models import *
 from django.shortcuts import render,redirect
 from django.contrib import messages
-from django.template import RequestContext
 from bookmarks.forms import *
 
 def main_page(request):

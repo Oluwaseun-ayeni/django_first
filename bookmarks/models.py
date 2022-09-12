@@ -1,6 +1,6 @@
 from django.db import models
 
-import bookmarks
+
 
 class Link(models.Model):
     url = models.URLField(unique=True)

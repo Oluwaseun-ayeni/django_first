@@ -12,18 +12,39 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
+import environ
+from django.core.exceptions import ImproperlyConfigured
+
+
+
+
+ 
+# environ.Env.read_env()
+
+# def get_env(var_name):
+#     try:
+#         return os.environ[var_name]
+#     except KeyError:
+#         error_msg = "set the %s environment variable" % var_name
+#         raise ImproperlyConfigured(error_msg)
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates'), )
 
+
+#connecting to env file
+env = environ.Env()
+environ.Env.read_env(env_file=str(BASE_DIR) + '/.env')  
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-%r!ly&%frv4*$2!f&4g$8zynny+19ed)=dok0*+&mkv5pue3a7'
-
+SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -87,12 +108,12 @@ WSGI_APPLICATION = 'django_first.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'd_first',
-        'USER': 'postgres',
-        'PASSWORD': 'Password1!',
-        'HOST': 'localhost',
-        'PORT': '5432'
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': env("DB_NAME"),
+        'USER': env("DB_USER"),
+        'PASSWORD': env("DB_PASSWORD"),
+        'HOST': env("DB_HOST"),
+        'PORT': env("DB_PORT"),
     }
 }
 
