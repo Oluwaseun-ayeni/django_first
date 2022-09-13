@@ -18,25 +18,17 @@ import os
 from django.urls import *
 from django.contrib import admin
 from django.conf import settings
-from django.contrib.staticfiles import views
-
-site_media = os.path.join(
-    os.path.dirname(__file__), 'site_media'
-)
+from django.conf.urls.static import static
 
 
 
 urlpatterns = [
     path('__debug__/', include('debug_toolbar.urls')),
-    path('bookmarks/', include('bookmarks.urls')),
+    path('', include('bookmarks.urls')),
     path('admin/', admin.site.urls),
-    path('bookmarks/',include('django.contrib.auth.urls')),
-    
-]
+    path('',include('django.contrib.auth.urls')), 
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 
-if settings.DEBUG:
-    urlpatterns += [
-        re_path(r'^site_media/(?P<path>.*)$', views.serve,
-        { 'document_root': site_media})
-    ]
+# if settings.DEBUG:
+#     urlpatterns += staticfiles_urlpatterns()

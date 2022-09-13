@@ -11,12 +11,12 @@ class RegistrationForm(forms.Form):
         widget = forms.PasswordInput()
     )
     password2 = forms.CharField(
-        label= 'Password (Again)',
+        label= 'Confirm Password',
         widget=forms.PasswordInput()
     )
 
     def clean_password2(self):
-        if 'password' in self.cleaned_data:
+        if 'password1' in self.cleaned_data:
             password1 = self.cleaned_data['password1']
             password2 = self.cleaned_data['password2']
             if password1 == password2:
