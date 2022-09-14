@@ -1,4 +1,3 @@
-
 from email import message
 from django.contrib.auth import logout,get_user_model,login
 from django.http import *
@@ -78,6 +77,37 @@ def activate(request,uidb64,token):
     else:
         messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
         return redirect('home')
+
+
+def bookmark_save_page(request):
+    if request.method == 'POST':
+        form = BookmarkSaveForm(request.POST)
+        if form.is_valid():
+            link, dummy = Link.objects.get_or_create(
+                url=form.cleaned_data['url']
+            )
+            bookmark, created =Bookmark.objects.get_or_create(
+                user=request.user,
+                link=link
+            )
+            bookmark.title = form.cleaned_data['title']
+
+            if not created:
+                bookmark.tag_set.clear()
+
+            tag_names = form.cleaned_data['tags'].split()
+            for tag_name in tag_names:
+                tag , dummy = Tag.objects.get_or_create(name=tag_name)
+                bookmark.tag_set.add(tag)
+            bookmark.save()   
+            return HttpResponseRedirect('/user/%s/' % request.user.username)
+        else:
+            form = BookmarkSaveForm()    
+        context = {
+            'form':form
+        }   
+        return render(request, 'bookmark_save.html', context)
+
 
 def logout_page(request):
     logout(request)
