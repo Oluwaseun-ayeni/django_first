@@ -1,30 +1,52 @@
-from django.test import TestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium import webdriver
+from django.test import LiveServerTestCase
+from selenium.webdriver.common.keys import Keys
+import time
+
+
+class Hottest(LiveServerTestCase):
+
+    def testhomepage(self):
+        driver = webdriver.Chrome(executable_path=r"chromedriver.exe")
+
+
+        driver.get('http://127.0.0.1:8000/')
+        assert "Welcome to Django Bookmarks" in driver.title
+
+    
+class LoginFormTest(LiveServerTestCase):
+
+    def testform(self):
+
+        driver = webdriver.Chrome(executable_path=r"chromedriver.exe")
+        driver.get('http://localhost:8000/login/')
+
+        time.sleep(5)
+
+
+        user_name = driver.find_element('name','username')
+        user_password = driver.find_element('name','password')
+
+        time.sleep(5)
+
+        submit = driver.find_element('name','continue')
+
+
+        time.sleep(10)
+        
+
+        user_name.send_keys('Storm')
+        user_password.send_keys('Tempete001')
+        
+        submit.send_keys(Keys.RETURN)
+
+
+        assert 'admin' in driver.page_source
 
 
 
-class MyseleniumTests(StaticLiveServerTestCase):
-    fixtures = ['user-dat.json']
-
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.selenium = WebDriver()
-        cls.selenium.implicitly_wait(10)
-
-    @classmethod
-    def test_login(self):
-        self.selenium.get ('%s%s' % (self.live_server_url, 
-        'login/'))
-        username_input= self.selenium.find_element(By.NAME, "username")
-        username_input.send_keys('myuser')
-        password_input = self.selenium.find_element(By.NAME, "password")
-        password_input.send_keys('secret')
-        self.selenium.find_element(By.XPATH,
-        '//input[@value="Log in"]').click()
         
 
 

@@ -2,15 +2,17 @@ from email import message
 from django.contrib.auth import logout,get_user_model,login
 from django.http import *
 from .models import *
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib import messages
 from bookmarks.forms import *
-from verify_email.email_handler import send_verification_email
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string  
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode 
 from django.utils.encoding import force_bytes, force_str
 from .token import account_activation_token
+from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 
@@ -20,14 +22,12 @@ def main_page(request):
     
 
 def user_page(request, username):
-    try:
-        user = Users.objects.get(username=username)
-    except:
-        raise Http404('Requested user not found.')
-    bookmarks = user.bookmark_set.all()
+    user = get_object_or_404(Users,username=username)
+    bookmarks = user.bookmarks_set.all()
     context = ({
         'username': username,
         'bookmarks': bookmarks,
+        'show_tags': True
     })    
     return render(request, "user_page.html",context)
 
@@ -35,7 +35,7 @@ def register_page(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)  
         if form.is_valid():
-            user = User.objects.create_user(
+            user = Users.objects.create(
                 username=form.cleaned_data['username'],
                 password=form.cleaned_data['password1'],
                 email=form.cleaned_data['email']
@@ -48,8 +48,10 @@ def register_page(request):
                 'uid':urlsafe_base64_encode(force_bytes(user.pk)),
                 'token':account_activation_token.make_token(user),
             })
-            
-            user.email_user(mail_subject,message)
+            recipient_list = [user.email, ]
+            email_from = settings.EMAIL_HOST_USER
+
+            send_mail(mail_subject,message, email_from,recipient_list)
             messages.success(request, ('Please Confirm your email to complete registration.'))
             
             return redirect('success/')
@@ -78,7 +80,7 @@ def activate(request,uidb64,token):
         messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
         return redirect('home')
 
-
+@login_required(login_url='/login/')
 def bookmark_save_page(request):
     if request.method == 'POST':
         form = BookmarkSaveForm(request.POST)
@@ -86,8 +88,9 @@ def bookmark_save_page(request):
             link, dummy = Link.objects.get_or_create(
                 url=form.cleaned_data['url']
             )
+            
             bookmark, created =Bookmark.objects.get_or_create(
-                user=request.user,
+                user=request.user.id,
                 link=link
             )
             bookmark.title = form.cleaned_data['title']
@@ -101,12 +104,12 @@ def bookmark_save_page(request):
                 bookmark.tag_set.add(tag)
             bookmark.save()   
             return HttpResponseRedirect('/user/%s/' % request.user.username)
-        else:
-            form = BookmarkSaveForm()    
-        context = {
-            'form':form
-        }   
-        return render(request, 'bookmark_save.html', context)
+    else:
+        form = BookmarkSaveForm()    
+    context = {
+        'form':form
+    }   
+    return render(request, 'bookmark_save.html', context)
 
 
 def logout_page(request):
