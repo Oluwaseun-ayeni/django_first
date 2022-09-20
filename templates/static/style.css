@@ -15,3 +15,18 @@ ul.tags, ul.tags li {
     margin: 0;
     padding: 0;
 }
+
+#tag_cloud{
+    text-align: center;
+}
+
+#tag_cloud a {
+    margin: 0 0.2em;
+}
+
+.tag_cloud-0 { font-size: 100%; }
+.tag_cloud-1 { font-size: 120%; }
+.tag_cloud-2 { font-size: 140%; }
+.tag_cloud-3 { font-size: 160%; }
+.tag_cloud-4 { font-size: 180%; }
+.tag_cloud-5 { font-size: 200%; }

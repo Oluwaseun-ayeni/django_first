@@ -112,6 +112,42 @@ def bookmark_save_page(request):
     return render(request, 'bookmark_save.html', context)
 
 
+def tag_page(request, tag_name):
+    tag = get_object_or_404(Tag, name=tag_name)
+    bookmarks = tag.bookmarks.order_by('-id')
+    context = ({
+        'bookmarks': bookmarks,
+        'tag_name' : tag_name,
+        'show_tag' : True,
+        'show_user': True
+    })
+    return render(request, 'tag_page.html', context)
+
+
+def tag_cloud_page(request):
+    MAX_WEIGHT = 7
+    tags = Tag.objects.order_by('name')
+    min_count = max_count = tags[0].bookmarks.count()
+    for tag in tags:
+        tag.count = tag.bookmarks.count()
+        if tag.count < min_count:
+            min_count = tag.count
+        if max_count < tag.count:
+            max_count = tag.count
+    range = float(max_count - min_count)
+    if range == 0.0:
+        range = 1.0
+    for related_tag in tags:
+        related_tag.weight = int(
+            MAX_WEIGHT * (tag.count - min_count) / range
+        )
+    context = ({
+        'tags': tags
+    })
+    return render(request, 'tag_cloud_page.html', context)
+
+
+
 def logout_page(request):
     logout(request)
     messages.info(request, 'you have successfully been logged out')
