@@ -3,12 +3,12 @@
 
 {% block title %}
  Tag:
- {{ tag_name }}
+ {{ tag_name | escape }}
 {% endblock %}
 
 {% block head %}
  Bookmarks for tag:
- {{ tag_name }}
+ {{ tag_name | escape }}
 {% endblock %}
 
 {% block content %}
