@@ -16,14 +16,6 @@ import environ
 from datetime import timedelta
 
 
-# environ.Env.read_env()
-
-# def get_env(var_name):
-#     try:
-#         return os.environ[var_name]
-#     except KeyError:
-#         error_msg = "set the %s environment variable" % var_name
-#         raise ImproperlyConfigured(error_msg)
 
 
 
@@ -179,6 +171,35 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+LOGIN_URL = 'login/'
+APPEND_SLASH = False
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # SIMPLE_JWT = {
 #     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),

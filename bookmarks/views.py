@@ -1,5 +1,5 @@
 from email import message
-from django.contrib.auth import logout,get_user_model,login
+from django.contrib.auth import logout,get_user_model,login,authenticate
 from django.http import *
 from .models import *
 from django.shortcuts import render,redirect,get_object_or_404
@@ -14,6 +14,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib import auth
+from django.core.exceptions import ObjectDoesNotExist
 
 
 
@@ -22,6 +23,30 @@ from django.contrib import auth
 
 def main_page(request):
     return render( request, "main_page.html")
+
+
+def login_page(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = request.POST['username']
+            password = request.POST['password']
+            user = authenticate(request, username=username,
+            password=password)
+
+            if user is not None:
+                login(request, user)
+                messages.success(request, 'You have successfully log in')
+            return redirect("bookmark:userpage")
+
+        else:
+            messages.error(request, 'Info incorrect')
+    else:
+        form = LoginForm()   
+    context = ( {
+            'form': form
+        })
+    return render(request, 'registration/login.html', context)
     
     
 
@@ -31,7 +56,8 @@ def user_page(request, username):
     context = ({
         'username': username,
         'bookmarks': bookmarks,
-        'show_tags': True
+        'show_tags': True,
+        'show_edit': username == request.user.username,
     })    
     return render(request, "user_page.html",context)
 
@@ -89,31 +115,58 @@ def bookmark_save_page(request):
     if request.method == 'POST':
         form = BookmarkSaveForm(request.POST)
         if form.is_valid():
-            link, dummy = Link.objects.get_or_create(
-                url=form.cleaned_data['url']
-            )
-            current_user = auth.get_user(request)
-            bookmark, created =Bookmark.objects.get_or_create(
-                user=current_user,
-                link=link
-            )
-            bookmark.title = form.cleaned_data['title']
-
-            if not created:
-                bookmark.tag_set.clear()
-
-            tag_names = form.cleaned_data['tags'].split()
-            for tag_name in tag_names:
-                tag , dummy = Tag.objects.get_or_create(name=tag_name)
-                bookmark.tag_set.add(tag)
-            bookmark.save()   
+            bookmark = _bookmark_save(request,form)
             return HttpResponseRedirect('/user/%s/' % request.user.username)
+        
+    elif 'url' in request.GET:
+        url = request.GET['url']
+        title = ''
+        tags = ''
+        try:
+            link = Link.objects.get(url=url)
+            current_user = auth.get_user(request)
+            bookmark = Bookmark.objects.get(
+                link=link,
+                user=current_user
+            )
+            title = bookmark.title
+            tags = ' '.join(
+                tag.name for tag in bookmark.tag_set.all()
+            )
+        except ObjectDoesNotExist:
+            pass
+        form = BookmarkSaveForm({
+            'url': url,
+            'title': title,
+            'tags': tags
+        })
     else:
         form = BookmarkSaveForm()    
     context = {
         'form':form
     }   
     return render(request, 'bookmark_save.html', context)
+
+def _bookmark_save(request, form):
+    link, dummy = \
+        Link.objects.get_or_create(
+                    url=form.cleaned_data['url'])
+    current_user = auth.get_user(request)
+    bookmark, created =Bookmark.objects.get_or_create(
+        user=current_user,
+        link=link
+    )
+    bookmark.title = form.cleaned_data['title']
+
+    if not created:
+        bookmark.tag_set.clear()
+
+    tag_names = form.cleaned_data['tags'].split()
+    for tag_name in tag_names:
+        tag , dummy = Tag.objects.get_or_create(name=tag_name)
+        bookmark.tag_set.add(tag)
+    bookmark.save() 
+    return bookmark  
 
 
 def tag_page(request, tag_name):
@@ -174,6 +227,7 @@ def search_page(request):
         return render(request,'bookmark_list.html', context)
     else:
         return render(request, 'search.html',context)
+        
 
 
 def logout_page(request):

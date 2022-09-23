@@ -39,3 +39,7 @@ ul.tags, ul.tags li {
 .tag_cloud-3 { font-size: 160%; }
 .tag_cloud-4 { font-size: 180%; }
 .tag_cloud-5 { font-size: 200%; }
+
+ul.bookmarks .edit{
+    font-size: 70%;
+}
