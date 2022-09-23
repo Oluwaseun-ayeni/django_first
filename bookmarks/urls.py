@@ -19,7 +19,7 @@ urlpatterns = [
     path('', views.main_page, name="homepage"),
     path('user/<username>/', views.user_page, name="userpage"),
     path('logout/', views.logout_page, name="logout"),
-    path('login/', views.login_page),
+    path('login/', views.login_page, name='login'),
     path('register/', views.register_page),   
     path('register/success/',TemplateView.as_view
     (template_name='registration/register_success.html'),name='success'),

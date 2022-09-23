@@ -1,4 +1,5 @@
 from email import message
+from wsgiref.handlers import read_environ
 from django.contrib.auth import logout,get_user_model,login,authenticate
 from django.http import *
 from .models import *
@@ -19,7 +20,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 
-
+ 
 
 def main_page(request):
     return render( request, "main_page.html")
@@ -31,16 +32,22 @@ def login_page(request):
         if form.is_valid():
             username = request.POST['username']
             password = request.POST['password']
-            user = authenticate(request, username=username,
-            password=password)
+            if User.objects.filter(username=username).exists():
+                user = User.objects.get(username=username)
+                # if user.check_password(password):
+                user = authenticate(request, username=username,
+                        password=password)
+                if user is not None:
+                    login(request, user)
+                    messages.success(request, 'You have successfully log in')
+                return redirect("/")
 
-            if user is not None:
-                login(request, user)
-                messages.success(request, 'You have successfully log in')
-            return redirect("bookmark:userpage")
-
+            else:
+                messages.warning(request, 'Incorrect password')
+                return redirect("bookmark:login")
         else:
-            messages.error(request, 'Info incorrect')
+            messages.error(request, 'User name does not exist')
+            return redirect("bookmark:login")
     else:
         form = LoginForm()   
     context = ( {
