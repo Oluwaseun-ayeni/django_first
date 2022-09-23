@@ -1,14 +1,22 @@
-import os
+
 from django.urls import *
-from . import views
+from . import views, api_views
 from django.views.generic import TemplateView
+
+
 
 
 
 
 app_name = 'bookmark'
 
+
+# router = SimpleRouter()
+# router.register('books', api_views.BookViewSet)
+
+
 urlpatterns = [
+    # path('', include(router.urls)),
     path('', views.main_page, name="homepage"),
     path('user/<username>/', views.user_page),
     path('logout/', views.logout_page, name="logout"),
@@ -18,6 +26,7 @@ urlpatterns = [
     path('activate/<uidb64>/<token>/',views.activate, name='activate'),
     path('save/',views.bookmark_save_page),
     path('tag/<tag_name>', views.tag_page),
-    path('tag/' ,views.tag_cloud_page)
-
+    path('tag/' ,views.tag_cloud_page),
+    path('login/register/', views.register_page),
+    path('search/', views.search_page)
 ]

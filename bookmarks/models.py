@@ -1,5 +1,5 @@
 from django.db import models
-# from django.contrib.auth.models import User
+from django.contrib.auth.models import User
 
 
 
@@ -11,7 +11,7 @@ class Link(models.Model):
     def __str__(self):
         return self.url
 
-class Users(models.Model):
+class User(models.Model):
     username = models.CharField( max_length=40)
     password = models.CharField( max_length=200) 
     email = models.EmailField(max_length=75)   
@@ -21,7 +21,7 @@ class Users(models.Model):
 
 class Bookmark(models.Model):
     title = models.CharField(max_length=200)
-    user = models.ForeignKey(Users, related_name="bookmarks",on_delete=models.CASCADE)
+    user = models.ForeignKey(User,db_index=False, on_delete=models.CASCADE)
     link = models.ForeignKey(Link, on_delete=models.CASCADE)  
 
     def __str__(self):

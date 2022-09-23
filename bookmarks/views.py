@@ -13,6 +13,10 @@ from .token import account_activation_token
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.conf import settings
+from django.contrib import auth
+
+
+
 
 
 
@@ -22,8 +26,8 @@ def main_page(request):
     
 
 def user_page(request, username):
-    user = get_object_or_404(Users,username=username)
-    bookmarks = user.bookmarks_set.all()
+    user = get_object_or_404(User,username=username)
+    bookmarks = user.bookmark_set.all()
     context = ({
         'username': username,
         'bookmarks': bookmarks,
@@ -35,7 +39,7 @@ def register_page(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)  
         if form.is_valid():
-            user = Users.objects.create(
+            user = User.objects.create(
                 username=form.cleaned_data['username'],
                 password=form.cleaned_data['password1'],
                 email=form.cleaned_data['email']
@@ -88,9 +92,9 @@ def bookmark_save_page(request):
             link, dummy = Link.objects.get_or_create(
                 url=form.cleaned_data['url']
             )
-            
+            current_user = auth.get_user(request)
             bookmark, created =Bookmark.objects.get_or_create(
-                user=request.user.id,
+                user=current_user,
                 link=link
             )
             bookmark.title = form.cleaned_data['title']
@@ -146,6 +150,30 @@ def tag_cloud_page(request):
     })
     return render(request, 'tag_cloud_page.html', context)
 
+
+def search_page(request):
+    form = SearchForm()
+    bookmarks = []
+    show_results = False
+    
+    if 'query' in request.GET:
+        show_results = True
+        query = request.GET['query'].strip()
+        if query:
+            form = SearchForm({'query' : query})
+            bookmarks = \
+                Bookmark.objects.filter(title__icontains=query)[:10]
+    context = ({
+        'form' : form,
+        'bookmarks' : bookmarks,
+        'show_results': show_results,
+        'show_tags' : True,
+        'show_user' : True
+    })
+    if 'ajax' in request.GET:
+        return render(request,'bookmark_list.html', context)
+    else:
+        return render(request, 'search.html',context)
 
 
 def logout_page(request):
