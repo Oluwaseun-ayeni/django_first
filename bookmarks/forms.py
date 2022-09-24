@@ -40,6 +40,15 @@ class LoginForm(forms.Form):
         label='password',
         widget= forms.PasswordInput()
     )
+
+    # def con_username(self):
+    #     username = User.objects.get(username=username)
+    #     if username is not None:
+    #         return username 
+    #     else:
+    #         raise forms.ValidationError('Username incorrect')
+
+        
     
 
     
