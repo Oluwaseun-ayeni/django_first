@@ -115,11 +115,23 @@ def activate(request,uidb64,token):
 
 @login_required(login_url='/login/')
 def bookmark_save_page(request):
+    ajax = 'ajax' in request.GET
     if request.method == 'POST':
         form = BookmarkSaveForm(request.POST)
         if form.is_valid():
             bookmark = _bookmark_save(request,form)
-            return HttpResponseRedirect('/user/%s/' % request.user.username)
+            if ajax:
+                context =({
+                    'bookmarks': [bookmark],
+                    'show_edit': True,
+                    'show_tags': True
+                })
+                return render(request, 'bookmark_list.html', context)
+            else:
+                return HttpResponseRedirect('/user/%s/' % request.user.username)
+        else:
+            if ajax:
+                return HttpResponse('failure')
         
     elif 'url' in request.GET:
         url = request.GET['url']
@@ -148,7 +160,10 @@ def bookmark_save_page(request):
     context = {
         'form':form
     }   
-    return render(request, 'bookmark_save.html', context)
+    if ajax:
+        return render(request, 'bookmark_save_form.html' ,context)
+    else:
+        return render(request, 'bookmark_save.html', context)
 
 def _bookmark_save(request, form):
     link, dummy = \
