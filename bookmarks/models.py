@@ -21,7 +21,7 @@ class User(models.Model):
 
 class Bookmark(models.Model):
     title = models.CharField(max_length=200)
-    user = models.ForeignKey(User,db_index=False, on_delete=models.CASCADE)
+    user = models.ForeignKey(User , related_name= "bookmarks",on_delete=models.CASCADE)
     link = models.ForeignKey(Link, on_delete=models.CASCADE)  
 
     def __str__(self):

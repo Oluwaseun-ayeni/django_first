@@ -55,7 +55,7 @@ def login_page(request):
 
 def user_page(request, username):
     user = get_object_or_404(User,username=username)
-    bookmarks = user.bookmark_set.all()
+    bookmarks = user.bookmarks_set.all()
     context = ({
         'username': username,
         'bookmarks': bookmarks,
