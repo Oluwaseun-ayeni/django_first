@@ -1,4 +1,5 @@
 import re
+from tkinter import Label
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django import forms
@@ -68,11 +69,16 @@ class BookmarkSaveForm(forms.Form):
         required=False,
         widget = forms.TextInput(attrs={'size': 64})
     )
+    share = forms.BooleanField(
+        label= 'Share on the main page',
+        required=False
+    )
 
 class SearchForm(forms.Form):
     query = forms.CharField(
         label = 'Enter a keyword to search for ',
         widget=forms.TextInput(attrs={'size': 32})
     )
+   
    
     

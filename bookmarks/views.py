@@ -1,6 +1,4 @@
 from email import message
-from logging import raiseExceptions
-from wsgiref.handlers import read_environ
 from django.contrib.auth import logout,get_user_model,login,authenticate
 from django.http import *
 from .models import *
@@ -17,6 +15,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib import auth
 from django.core.exceptions import ObjectDoesNotExist
+from datetime import datetime, timedelta
 
 
 
@@ -24,7 +23,13 @@ from django.core.exceptions import ObjectDoesNotExist
  
 
 def main_page(request):
-    return render( request, "main_page.html")
+    shared_bookmarks = SharedBookmark.objects.order_by(
+        '-date'
+    )[:10]
+    context =({
+        'shared_bookmarks': shared_bookmarks
+    })
+    return render( request, "main_page.html", context)
 
 
 def login_page(request):
@@ -183,6 +188,13 @@ def _bookmark_save(request, form):
     for tag_name in tag_names:
         tag , dummy = Tag.objects.get_or_create(name=tag_name)
         bookmark.tag_set.add(tag)
+    if form.cleaned_data['share']:
+        shared_boomark, created = SharedBookmark.objects.get_or_create(
+            bookmark=bookmark
+        )
+        if created:
+            shared_boomark.users_voted.add(request.user)
+            shared_boomark.save()
     bookmark.save() 
     return bookmark  
 
@@ -245,7 +257,41 @@ def search_page(request):
         return render(request,'bookmark_list.html', context)
     else:
         return render(request, 'search.html',context)
-        
+
+@login_required   
+def bookmark_vote_page(request):
+    if 'id' in request.GET:
+        try:
+            id = request.GET['id']
+            shared_bookmark = SharedBookmark.objects.get(id=id)
+            user_voted = shared_bookmark.users_voted.filter(
+                username=request.user.username
+            )
+            if not user_voted:
+                shared_bookmark.votes += 1
+                shared_bookmark.users_voted.add(request.user)
+                shared_bookmark.save()
+        except ObjectDoesNotExist:
+            raise Http404('Bookmark not found.')
+    if 'HTTP_REFERER' in request.META:
+        return redirect(request.META['HTTP_REFERER'])
+    return redirect('/')
+
+
+def popular_page(request):
+    today = datetime.today()
+    yesterday = today - timedelta(1)
+    shared_bookmarks = SharedBookmark.objects.filter(
+        date__gt=yesterday
+    )
+    shared_bookmarks = shared_bookmarks.order_by(
+        '-votes'
+    )[:10]
+
+    context = ({
+        'shared_bookmarks': shared_bookmarks,
+    })
+    return render(request, 'popular_page.html', context)
 
 
 def logout_page(request):

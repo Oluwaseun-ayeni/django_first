@@ -1,3 +1,4 @@
+from pyexpat import model
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -34,3 +35,12 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+class SharedBookmark(models.Model):
+    bookmark = models.ForeignKey(Bookmark, unique=True, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True)
+    votes = models.IntegerField(default=1)
+    users_voted = models.ManyToManyField(User)
+
+    def __str__(self):
+        return '%s, %s' % self.bookmark,self.votes
+        

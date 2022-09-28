@@ -1,6 +1,6 @@
 
 from django.urls import *
-from . import views, api_views
+from . import views
 from django.views.generic import TemplateView
 
 
@@ -9,10 +9,6 @@ from django.views.generic import TemplateView
 
 
 app_name = 'bookmark'
-
-
-# router = SimpleRouter()
-# router.register('books', api_views.BookViewSet)
 
 
 urlpatterns = [
@@ -28,5 +24,7 @@ urlpatterns = [
     path('tag/<tag_name>', views.tag_page),
     path('tag/' ,views.tag_cloud_page), 
     path('search/', views.search_page),
+    path('vote/', views.bookmark_vote_page),
+    path('popular/', views.popular_page),
 ]
 
