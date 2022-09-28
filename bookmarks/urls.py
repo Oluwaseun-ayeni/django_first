@@ -26,5 +26,6 @@ urlpatterns = [
     path('search/', views.search_page),
     path('vote/', views.bookmark_vote_page),
     path('popular/', views.popular_page),
+    path('bookmark/', views.bookmark_page)
 ]
 
