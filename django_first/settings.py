@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'rest_framework_simplejwt',
     'rest_framework',
+    'bookmark_api',
     
 ]
 
@@ -71,12 +72,9 @@ MIDDLEWARE = [
 
 
 PASSWORD_HASHERS = [
-    'django_first.hashers.MyPBKDF2PasswordHasher',
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
-    'django.contrib.auth.hashers.Argon2PasswordHasher',
-    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
-    'django.contrib.auth.hashers.ScryptPasswordHasher',
+    
 ]
 
 REST_FRAMEWORK = {
@@ -183,6 +181,8 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SITE_ID=1
 
 
 

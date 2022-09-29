@@ -31,6 +31,7 @@ urlpatterns = [
     path('', include('bookmarks.urls')),
     path('admin/', admin.site.urls),
     path('comments/', include('django_comments.urls')),
+    path('api/v1', include("bookmark_api.urls")),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
