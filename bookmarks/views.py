@@ -293,6 +293,15 @@ def popular_page(request):
     })
     return render(request, 'popular_page.html', context)
 
+def bookmark_page(request,bookmark_id):
+    shared_bookmark = get_object_or_404(SharedBookmark,
+            id=bookmark_id)
+    context = ({
+        'shared_bookmark': shared_bookmark
+    })
+
+    return(request, 'bookmark_page.html', context)
+
 
 def logout_page(request):
     logout(request)
