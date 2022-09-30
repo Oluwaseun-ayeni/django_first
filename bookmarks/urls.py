@@ -2,13 +2,16 @@
 from django.urls import *
 from . import views
 from django.views.generic import TemplateView
-
-
-
-
+from bookmarks.feeds import *
 
 
 app_name = 'bookmark'
+
+feeds = {
+
+    'recent': RecentBookmarks
+
+     }
 
 
 urlpatterns = [
@@ -27,6 +30,9 @@ urlpatterns = [
     path('vote/', views.bookmark_vote_page),
     path('popular/', views.popular_page),
     path('bookmark/<int:bookmark_id>/', views.bookmark_page),
+    path('feed/<url>/', RecentBookmarks(), name='latest_feed')
+
+    
 ]
 
 

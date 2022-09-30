@@ -10,7 +10,7 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode 
 from django.utils.encoding import force_bytes, force_str
 from .token import account_activation_token
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required,permission_required
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib import auth
@@ -118,7 +118,8 @@ def activate(request,uidb64,token):
         messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
         return redirect('home')
 
-@login_required(login_url='/login/')
+
+@permission_required('bookmarks.add_bookmark', login_url="/login/")
 def bookmark_save_page(request):
     ajax = 'ajax' in request.GET
     if request.method == 'POST':

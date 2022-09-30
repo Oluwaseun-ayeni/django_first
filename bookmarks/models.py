@@ -4,13 +4,12 @@ from django.contrib.auth.models import User
 
 
 
-
-
 class Link(models.Model):
     url = models.URLField(unique=True)
 
     def __str__(self):
         return self.url
+   
 
 class User(models.Model):
     username = models.CharField( max_length=40)
@@ -18,7 +17,7 @@ class User(models.Model):
     email = models.EmailField(max_length=75)   
     
     def is_active(self):
-        return True
+        return True 
 
 class Bookmark(models.Model):
     title = models.CharField(max_length=200)
@@ -27,6 +26,11 @@ class Bookmark(models.Model):
 
     def __str__(self):
         return '%s, %s' % (self.user.username, self.link.url)
+    
+    def get_absolute_url(self):
+        return self.link.url
+
+    
 
 class Tag(models.Model):
     name = models.CharField(max_length=64, unique=True)
