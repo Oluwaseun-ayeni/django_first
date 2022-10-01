@@ -9,7 +9,8 @@ app_name = 'bookmark'
 
 feeds = {
 
-    'recent': RecentBookmarks
+    'recent': RecentBookmarks,
+    
 
      }
 

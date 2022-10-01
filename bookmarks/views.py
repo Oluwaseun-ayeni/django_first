@@ -1,4 +1,5 @@
 from email import message
+from turtle import title
 from django.contrib.auth import logout,get_user_model,login,authenticate
 from django.http import *
 from .models import *
@@ -16,6 +17,7 @@ from django.conf import settings
 from django.contrib import auth
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime, timedelta
+from django.db.models import Q
 
 
 
@@ -244,9 +246,12 @@ def search_page(request):
         show_results = True
         query = request.GET['query'].strip()
         if query:
+            keywords = query.split()
+            q = Q()
+            for keyword in keywords:
+                q = q & Q(title__icontains=keyword)
             form = SearchForm({'query' : query})
-            bookmarks = \
-                Bookmark.objects.filter(title__icontains=query)[:10]
+            bookmarks = Bookmark.objects.filter(q)[:10]
     context = ({
         'form' : form,
         'bookmarks' : bookmarks,
