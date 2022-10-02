@@ -1,6 +1,5 @@
 from email import message
-from turtle import title
-from django.contrib.auth import logout,get_user_model,login,authenticate
+from django.contrib.auth import logout,get_user_model,login
 from django.http import *
 from .models import *
 from django.shortcuts import render,redirect,get_object_or_404
@@ -18,6 +17,7 @@ from django.contrib import auth
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime, timedelta
 from django.db.models import Q
+from django.core.paginator import Paginator
 
 
 
