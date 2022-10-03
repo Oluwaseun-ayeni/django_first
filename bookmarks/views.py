@@ -1,5 +1,6 @@
+from distutils.log import Log
 from email import message
-from django.contrib.auth import logout,get_user_model,login
+from django.contrib.auth import logout,get_user_model,login,authenticate
 from django.http import *
 from .models import *
 from django.shortcuts import render,redirect,get_object_or_404
@@ -42,15 +43,12 @@ def login_page(request):
             password = request.POST['password']
             if User.objects.filter(username=username).exists():
                 user = User.objects.get(username=username)
-                # user = authenticate(request, username=username,
-                #         password=password)
+                user = authenticate(request, username=username,
+                        password=password)
                 if user is not None:
                     login(request, user)
-                    messages.success(request, ('You have successfully log in'))
+                    messages.success(request, 'You have successfully log in')
                 return redirect("/")
-
-        else:
-            return redirect("bookmark:login")
     else:
         form = LoginForm()   
     context = ( {
@@ -58,16 +56,31 @@ def login_page(request):
         })
     return render(request, 'registration/login.html', context)
     
-    
-
+ITEM_PER_PAGE = 10    
 def user_page(request, username):
     user = get_object_or_404(User,username=username)
-    bookmarks = user.bookmarks_set.all()
+    query_set = user.bookmark_set.order_by('-id')
+    paginator = Paginator(query_set, ITEM_PER_PAGE)
+    try:
+        page = int(request.GET['page'])
+    except:
+        page = 1
+    try:
+        bookmarks = paginator.get_page(page - 1)
+    except:
+        raise Http404
     context = ({
         'username': username,
         'bookmarks': bookmarks,
         'show_tags': True,
         'show_edit': username == request.user.username,
+        'show_paginator': paginator.page > 1,
+        'has_prev': paginator.has_previous_page(page - 1),
+        'has_next' : paginator.has_next_page(page - 1),
+        'page' : page,
+        'pages':paginator.pages,
+        'next_page' : page + 1,
+        'prev_page' : page - 1
     })    
     return render(request, "user_page.html",context)
 
