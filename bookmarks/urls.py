@@ -1,4 +1,3 @@
-
 from django.urls import *
 from . import views
 from django.views.generic import TemplateView
@@ -31,7 +30,8 @@ urlpatterns = [
     path('vote/', views.bookmark_vote_page),
     path('popular/', views.popular_page),
     path('bookmark/<int:bookmark_id>/', views.bookmark_page),
-    path('feed/<url>/', RecentBookmarks(), name='latest_feed')
+    path('feed/<url>/', RecentBookmarks(), name='latest_feed'),
+    path('friends/<username>/', views.friends_page),
 
     
 ]

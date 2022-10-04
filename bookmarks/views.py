@@ -2,6 +2,7 @@ from distutils.log import Log
 from email import message
 from django.contrib.auth import logout,get_user_model,login,authenticate
 from django.http import *
+from uritemplate import variables
 from .models import *
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib import messages
@@ -320,6 +321,21 @@ def bookmark_page(request,bookmark_id):
     })
 
     return(request, 'bookmark_page.html', context)
+
+def friends_page(request, username):
+    user = get_object_or_404(User, username=username)
+    friends = \
+        [friendship.to_friend for friendship in user.friend_set.all()]
+    friend_bookmarks = \
+        Bookmark.objects.filter(user__in=friends).order_by('-id')
+    context = ({
+        'username' : username,
+        'friends' : friends,
+        'bookmarks' : friend_bookmarks[:10],
+        'show_tags' : True,
+        'show_user' : True
+    })
+    return render(request, 'friends_page.html', context)
 
 
 def logout_page(request):
