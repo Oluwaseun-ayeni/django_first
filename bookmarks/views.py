@@ -1,8 +1,6 @@
-from distutils.log import Log
 from email import message
 from django.contrib.auth import logout,get_user_model,login,authenticate
 from django.http import *
-from uritemplate import variables
 from .models import *
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib import messages
@@ -44,12 +42,15 @@ def login_page(request):
             password = request.POST['password']
             if User.objects.filter(username=username).exists():
                 user = User.objects.get(username=username)
+                print("USER", user)
+
                 user = authenticate(request, username=username,
                         password=password)
                 if user is not None:
+                    
                     login(request, user)
                     messages.success(request, 'You have successfully log in')
-                return redirect("/")
+            return redirect("/")
     else:
         form = LoginForm()   
     context = ( {
@@ -57,31 +58,46 @@ def login_page(request):
         })
     return render(request, 'registration/login.html', context)
     
+
+# def login_page(request):
+#     if request.method == 'POST':
+#         form = LoginForm(request.POST)
+#         if form.is_valid():
+#             username = request.POST['username']
+#             password = request.POST['password']
+#             user = authenticate(username=username,password=password)
+#             if user is not None:
+#                 login(request, user)
+#                 return redirect('/')
+#     else:
+#         form = LoginForm()
+#     context = ({
+#         'form' : form
+#     })
+#     return render(request,'registration/login.html', context)
+
+
+
+
 ITEM_PER_PAGE = 10    
 def user_page(request, username):
     user = get_object_or_404(User,username=username)
     query_set = user.bookmark_set.order_by('-id')
     paginator = Paginator(query_set, ITEM_PER_PAGE)
-    try:
-        page = int(request.GET['page'])
-    except:
-        page = 1
-    try:
-        bookmarks = paginator.get_page(page - 1)
-    except:
-        raise Http404
+    is_friend = Friendship.objects.filter(
+        from_friend = request.user.id,
+        to_friend=user
+    )
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = ({
         'username': username,
-        'bookmarks': bookmarks,
         'show_tags': True,
         'show_edit': username == request.user.username,
-        'show_paginator': paginator.page > 1,
-        'has_prev': paginator.has_previous_page(page - 1),
-        'has_next' : paginator.has_next_page(page - 1),
-        'page' : page,
-        'pages':paginator.pages,
-        'next_page' : page + 1,
-        'prev_page' : page - 1
+        'page_obj' : page_obj,
+        'is_friend' : is_friend,
     })    
     return render(request, "user_page.html",context)
 
@@ -336,6 +352,44 @@ def friends_page(request, username):
         'show_user' : True
     })
     return render(request, 'friends_page.html', context)
+
+@login_required
+def friend_add(request):
+    if 'username' in request.GET:
+        friend = \
+            get_object_or_404(User, username=request.GET['username'])
+        friendship = Friendship(
+            from_friend = request.user,
+            to_friend = friend
+        )
+        friendship.save()
+        return redirect('/friends/%s/' % request.user.username)
+    else:
+        raise Http404
+
+
+@login_required(login_url='/login/')
+def friend_invite(request):
+    if request.method == 'POST':
+        form = FriendInviteForm(request.POST)
+        if form.is_valid():
+            invitation = Invitation(
+                name = form.cleaned_data['name'],
+                email = form.cleaned_data['email'],
+                code = User.objects.make_random_password(20),
+                sender = request.user
+            )
+            invitation.save()
+            invitation.send()
+            return redirect('/friend/invite/')
+    else:
+        form = FriendInviteForm()
+    context = ({
+        'form' : form
+    })
+    return render(request, 'friend_invite.html', context)
+
+
 
 
 def logout_page(request):

@@ -1,3 +1,4 @@
+import email
 import re
 from .models import User
 from django.core.exceptions import ObjectDoesNotExist
@@ -41,16 +42,6 @@ class LoginForm(forms.Form):
         widget= forms.PasswordInput()
     )
 
-    # def con_username(self):
-    #     username = User.objects.get(username=username)
-    #     if username is not None:
-    #         return username 
-    #     else:
-    #         raise forms.ValidationError('Username incorrect')
-
-        
-    
-
     
 class BookmarkSaveForm(forms.Form):
     url = forms.URLField(
@@ -78,6 +69,10 @@ class SearchForm(forms.Form):
         label = 'Enter a keyword to search for ',
         widget=forms.TextInput(attrs={'size': 32})
     )
+
+class FriendInviteForm(forms.Form):
+    name = forms.CharField(label='Friend\'s Name')
+    email = forms.EmailField(label='Friend\'s Email')
    
    
     

@@ -13,5 +13,19 @@
 {% endblock %}   
 
 {% block content %}
-    {% include "bookmark_list.html" %}
+   {% if user.username == username %}
+     <a href="/friends/{{ username }}/">view your friends</a>
+   {% else %}
+     {% if is_friend %}
+       <a href="/friends/{{ user.username }}/">
+                         {{ username }} is a friend of yours </a>
+     {% else %}
+       <a href="/friend/add/?username={{ username }}">
+                          add {{ username }} to your friends</a>
+     {% endif %}
+       <a href="/friends/{{ username }}/">
+                   view {{ username }}'s friends</a>
+   {% endif %}
+
+     {% include "bookmark_list.html" %}
 {% endblock %}     

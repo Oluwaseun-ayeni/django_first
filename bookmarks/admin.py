@@ -5,6 +5,7 @@ from .models import *
 admin.site.register(User)
 admin.site.register(Link)
 admin.site.register(Tag)
+admin.site.register(Invitation)
 
 @admin.register(Bookmark)
 class BookmarkAdmin(admin.ModelAdmin):
