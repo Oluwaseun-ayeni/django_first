@@ -33,7 +33,8 @@ urlpatterns = [
     path('feed/<url>/', RecentBookmarks(), name='latest_feed'),
     path('friends/<username>/', views.friends_page),
     path('friend/add/', views.friend_add),
-    path('friend/invite/', views.friend_invite)
+    path('friend/invite/', views.friend_invite),
+    path('friend/accept/<code>/' ,views.friend_accept),
 
     
 ]

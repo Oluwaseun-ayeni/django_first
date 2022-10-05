@@ -110,6 +110,16 @@ def register_page(request):
                 password=form.cleaned_data['password1'],
                 email=form.cleaned_data['email']
             )
+            if 'invitation' in request.session:
+                invitation = \
+                    Invitation.objects.get(id=request.session['invitation'])
+                friendship = Friendship(
+                    from_friend=user,
+                    to_friend=invitation.sender
+                )
+                friendship.save()
+                invitation.delete()
+                del request.session['invitation']
             current_site = get_current_site(request)
             mail_subject = 'Activation link has been sent to the registered email'
             message = render_to_string('acc_active_email.html',{
@@ -362,7 +372,15 @@ def friend_add(request):
             from_friend = request.user,
             to_friend = friend
         )
-        friendship.save()
+        try:
+            friendship.save()
+            request.user.message_set.create(
+                message = '%s was added to your friend list.' % friend.username
+            )
+        except:
+            request.user.message_set.create(
+                message = '%s is already a friend of yours.' % friend.username
+            )
         return redirect('/friends/%s/' % request.user.username)
     else:
         raise Http404
@@ -380,7 +398,15 @@ def friend_invite(request):
                 sender = request.user
             )
             invitation.save()
-            invitation.send()
+            try:
+                invitation.send()
+                request.user.message_set.create(
+                    message = 'An invitation was sent to %s.' % invitation.email
+                )
+            except:
+                request.user.message_set.create(
+                    message='There was an error while sending this invitation.'
+                )
             return redirect('/friend/invite/')
     else:
         form = FriendInviteForm()
@@ -390,6 +416,10 @@ def friend_invite(request):
     return render(request, 'friend_invite.html', context)
 
 
+def friend_request(request,code):
+    invitation = get_object_or_404(Invitation, code__exact=code)
+    request.session['invitation'] = invitation.id
+    return redirect('/register')
 
 
 def logout_page(request):
