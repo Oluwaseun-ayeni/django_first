@@ -18,8 +18,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime, timedelta
 from django.db.models import Q
 from django.core.paginator import Paginator
-
-
+from django.contrib.auth.models import User
 
 
  
@@ -34,48 +33,26 @@ def main_page(request):
     return render( request, "main_page.html", context)
 
 
+
 def login_page(request):
+
     if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = request.POST['username']
-            password = request.POST['password']
-            if User.objects.filter(username=username).exists():
-                user = User.objects.get(username=username)
-                print("USER", user)
+        password = request.POST.get('password')
+        username = request.POST.get('username')
 
-                user = authenticate(request, username=username,
-                        password=password)
-                if user is not None:
-                    
-                    login(request, user)
-                    messages.success(request, 'You have successfully log in')
-            return redirect("/")
-    else:
-        form = LoginForm()   
-    context = ( {
-            'form': form
-        })
+        try:
+            user = User.objects.get(username=username)
+        except:
+            messages.error(request, 'User does not exist')
+            user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('/')
+        else:
+            messages.error(request, 'Username OR Password not Valid')
+
+    context = {}
     return render(request, 'registration/login.html', context)
-    
-
-# def login_page(request):
-#     if request.method == 'POST':
-#         form = LoginForm(request.POST)
-#         if form.is_valid():
-#             username = request.POST['username']
-#             password = request.POST['password']
-#             user = authenticate(username=username,password=password)
-#             if user is not None:
-#                 login(request, user)
-#                 return redirect('/')
-#     else:
-#         form = LoginForm()
-#     context = ({
-#         'form' : form
-#     })
-#     return render(request,'registration/login.html', context)
-
 
 
 
@@ -121,7 +98,7 @@ def register_page(request):
                 invitation.delete()
                 del request.session['invitation']
             current_site = get_current_site(request)
-            mail_subject = 'Activation link has been sent to the registered email'
+            subject = 'Activation link has been sent to the registered email'
             message = render_to_string('acc_active_email.html',{
                 'user':user,
                 'domain': current_site.domain,
@@ -131,7 +108,7 @@ def register_page(request):
             recipient_list = [user.email, ]
             email_from = settings.EMAIL_HOST_USER
 
-            send_mail(mail_subject,message, email_from,recipient_list)
+            send_mail(subject,message, email_from,recipient_list)
             messages.success(request, ('Please Confirm your email to complete registration.'))
             
             return redirect('success/')
@@ -161,7 +138,8 @@ def activate(request,uidb64,token):
         return redirect('home')
 
 
-@permission_required('bookmarks.add_bookmark', login_url="/login/")
+# @permission_required('bookmarks.add_bookmark', login_url="/login/")
+@login_required
 def bookmark_save_page(request):
     ajax = 'ajax' in request.GET
     if request.method == 'POST':
@@ -391,21 +369,22 @@ def friend_invite(request):
     if request.method == 'POST':
         form = FriendInviteForm(request.POST)
         if form.is_valid():
+            current_user = auth.get_user(request)
             invitation = Invitation(
                 name = form.cleaned_data['name'],
                 email = form.cleaned_data['email'],
                 code = User.objects.make_random_password(20),
-                sender = request.user
+                sender = current_user
             )
             invitation.save()
             try:
                 invitation.send()
-                request.user.message_set.create(
-                    message = 'An invitation was sent to %s.' % invitation.email
+                messages.success(request,
+                    'An invitation was sent to %s.' % invitation.email
                 )
             except:
-                request.user.message_set.create(
-                    message='There was an error while sending this invitation.'
+                messages.success(request,
+                   'There was an error while sending this invitation.'
                 )
             return redirect('/friend/invite/')
     else:
@@ -416,7 +395,7 @@ def friend_invite(request):
     return render(request, 'friend_invite.html', context)
 
 
-def friend_request(request,code):
+def friend_accept(request,code):
     invitation = get_object_or_404(Invitation, code__exact=code)
     request.session['invitation'] = invitation.id
     return redirect('/register')

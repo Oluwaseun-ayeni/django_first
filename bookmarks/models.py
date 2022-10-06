@@ -1,4 +1,3 @@
-from email import message
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -16,13 +15,13 @@ class Link(models.Model):
    
 
 
-class User(models.Model):
-    username = models.CharField( max_length=40)
-    password = models.CharField( max_length=200) 
-    email = models.EmailField(max_length=75)   
+# class User(models.Model):
+#     username = models.CharField( max_length=40)
+#     password = models.CharField( max_length=200) 
+#     email = models.EmailField(max_length=75)   
     
-    def is_active(self):
-        return True 
+#     def is_active(self):
+#         return True 
     
  
 

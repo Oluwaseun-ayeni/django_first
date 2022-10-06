@@ -16,10 +16,10 @@
         Please try again.</p>
     {% endif %}
        
-        <p><label for="id_username"> Username:</label>
-        {{ form.username }}</p>
-        <p><label for="id_password"> password:</label>
-            {{ form.password }}</p>
+        <label for="id_username"> Username:</label>
+        <input type="text" name="username" placeholder='Enter Username..' />
+        <label for="id_password"> password:</label>
+        <input type="password" name="password" placeholder='Enter Password..' />
         <input name="continue" type="submit" value="login" /> 
         <input type="hidden" name="next"  />   
     </form>   
