@@ -352,12 +352,12 @@ def friend_add(request):
         )
         try:
             friendship.save()
-            request.user.message_set.create(
-                message = '%s was added to your friend list.' % friend.username
+            messages.success(request,
+                '%s was added to your friend list.' % friend.username
             )
         except:
-            request.user.message_set.create(
-                message = '%s is already a friend of yours.' % friend.username
+            messages.success(request,
+                '%s is already a friend of yours.' % friend.username
             )
         return redirect('/friends/%s/' % request.user.username)
     else:
