@@ -19,6 +19,7 @@ from datetime import datetime, timedelta
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
+from django.utils.translation import gettext as _
 
 
  
@@ -380,11 +381,11 @@ def friend_invite(request):
             try:
                 invitation.send()
                 messages.success(request,
-                    'An invitation was sent to %s.' % invitation.email
+                    _('An invitation was sent to %(email)s.') % {'email':invitation.email}
                 )
             except:
                 messages.success(request,
-                   'There was an error while sending this invitation.'
+                   _('There was an error while sending this invitation.')
                 )
             return redirect('/friend/invite/')
     else:

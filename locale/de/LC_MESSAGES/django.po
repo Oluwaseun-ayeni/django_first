@@ -1,0 +1,63 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-10-07 10:23+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: .\bookmarks\forms.py:67
+msgid "Friend's Name"
+msgstr ""
+
+#: .\bookmarks\forms.py:68
+msgid "Friend's Email"
+msgstr ""
+
+#: .\bookmarks\views.py:384
+#, python-format
+msgid "An invitation was sent to %(email)s."
+msgstr ""
+
+#: .\bookmarks\views.py:388
+msgid "There was an error while sending this invitation."
+msgstr ""
+
+#: .\django_first\settings.py:192
+msgid "English"
+msgstr ""
+
+#: .\django_first\settings.py:193
+msgid "French"
+msgstr ""
+
+#: .\django_first\settings.py:194
+msgid "Polish"
+msgstr ""
+
+#: .\templates\admin\base_site.html:4
+msgid "Django Bookmarks site admin"
+msgstr ""
+
+#: .\templates\admin\base_site.html:8
+msgid "Django Bookmarks administration"
+msgstr ""
+
+#: .\templates\friend_invite.html:6 .\templates\friend_invite.html:10
+msgid "Invite A Friend"
+msgstr ""
+
+#: .\templates\friend_invite.html:18
+msgid "send invite"
+msgstr ""

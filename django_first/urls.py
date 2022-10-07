@@ -26,6 +26,7 @@ from rest_framework_simplejwt.views import(
 
 
 
+
 urlpatterns = [
     path('__debug__/', include('debug_toolbar.urls')),
     path('', include('bookmarks.urls')),
@@ -36,6 +37,3 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-
-# if settings.DEBUG:
-#     urlpatterns += staticfiles_urlpatterns()

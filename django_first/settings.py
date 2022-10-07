@@ -88,8 +88,9 @@ REST_FRAMEWORK = {
 INTERNAL_IPS = [
     # ...
     "127.0.0.1",
-    # ...
+    # ... 
 ]
+
 
 ROOT_URLCONF = 'django_first.urls'
 
@@ -104,6 +105,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+            
             ],
         },
     },
@@ -167,6 +169,8 @@ USE_I18N = True
 
 USE_TZ = True
 
+USE_L10N = True
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -177,6 +181,19 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
    os.path.join(BASE_DIR, 'static/')
 ]
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, "locale"),
+]
+
+
+ugettext = lambda s: s
+LANGUAGES = (
+    ('en', ugettext('English')),
+    ('fr', ugettext('French')),
+    ('pl', ugettext('Polish')),
+)
+
 
 
 # Default primary key field type
