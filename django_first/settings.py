@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 import environ
 from datetime import timedelta
+from django.utils.translation import gettext_lazy as _
 
 
 
@@ -39,7 +40,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -63,9 +63,11 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.cache.CacheMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "debug_toolbar.middleware.DebugToolbarMiddleware",
@@ -119,6 +121,7 @@ WSGI_APPLICATION = 'django_first.wsgi.application'
 
 DATABASES = {
     'default': {
+        
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': env("DB_NAME"),
         'USER': env("DB_USER"),
@@ -126,6 +129,7 @@ DATABASES = {
         'HOST': env("DB_HOST"),
         'PORT': env("DB_PORT"),
     }
+    
 }
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
@@ -161,7 +165,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+
 
 TIME_ZONE = 'UTC'
 
@@ -169,7 +173,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-USE_L10N = True
+# USE_L10N = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -187,12 +191,16 @@ LOCALE_PATHS = [
 ]
 
 
-ugettext = lambda s: s
-LANGUAGES = (
-    ('en', ugettext('English')),
-    ('fr', ugettext('French')),
-    ('pl', ugettext('Polish')),
-)
+
+LANGUAGE_CODE = 'en'
+
+LANGUAGES =[ 
+('en', _('English')),  
+('de', _('German')),
+('fr', _('French')),
+('pl', _('Polish')),
+('es', _('spanish')),
+]
 
 
 
@@ -205,13 +213,9 @@ SITE_ID=1
 
 LOGIN_REDIRECT_URL = '/login/'
 
+CACHE_BACKEND = 'db://cache_table'
 
-
-
-
-
-
-
+CACHE_MIDDLEWARE_SECONDS = 60 * 5
 
 
 

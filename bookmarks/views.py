@@ -19,7 +19,8 @@ from datetime import datetime, timedelta
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
+from django.views.decorators.cache import cache_page
 
 
  
@@ -232,7 +233,7 @@ def tag_page(request, tag_name):
     })
     return render(request, 'tag_page.html', context)
 
-
+@cache_page
 def tag_cloud_page(request):
     MAX_WEIGHT = 7
     tags = Tag.objects.order_by('name')

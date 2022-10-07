@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-    <title>Django Bookmarks |
+    <title>Tempete Bookmarks |
          {% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="/static/style.css"
         type="text/css" /> 
@@ -40,5 +40,16 @@
     {% endif %}
     {% block content %}
     {% endblock %}
+  <div id="footer">
+    Tempete Bookmarks <br/>
+    Languages:
+    <a href="/i18n/setlang/?language=en">en</a>
+    <a href="/i18n/setlang/?language=de">de</a>
+    <a href="/i18n/setlang/?language=es">es</a>
+    <a href="/i18n/setlang/?language=fr">fr</a>
+    <a href="/i18n/setlang/?language=pl">pl</a>
+    
+    
+  </div>
 </body>
 </html>
